@@ -1,0 +1,13 @@
+*.db
+*.lnk
+*~
+.idea/
+*.iml
+*.iws
+*.ipr
+.gradle
+out/
+build/
+src/main/generated
+src/test/generated_tests
+.DS_Store

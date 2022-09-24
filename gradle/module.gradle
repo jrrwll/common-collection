@@ -1,0 +1,38 @@
+/*
+touch src/module-info/java/module-info.java
+tree -i -f -N | grep -v '.*java$' | tail -n +4  | \
+    sed 's/.\//exports /1' | sed 's/\//./g' | awk '{print $0 ";"}'
+*/
+
+if (!plugins.hasPlugin('java') || !project.hasProperty('MODULE_NAME')) {
+    return
+}
+
+sourceSets {
+    moduleInfo {
+        java {
+            srcDir 'src/module-info/java'
+        }
+    }
+}
+
+compileModuleInfoJava {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    inputs.property("moduleName", MODULE_NAME)
+
+    doFirst {
+        classpath += sourceSets.main.compileClasspath
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'ALL-SYSTEM',
+                '-d', sourceSets.main.output.classesDirs.asPath
+        ]
+    }
+}
+
+jar {
+    from sourceSets.main.output
+    from sourceSets.moduleInfo.output
+}
